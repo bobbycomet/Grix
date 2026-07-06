@@ -15,161 +15,242 @@ Linux is powerful. It is also unforgiving in ways that have nothing to do with h
 
 ---
 
-## **Update on Grix – Simplifying for Reliability**
-Grix is currently under a major review and rewrite. Its core had grown overly complicated, trying to handle too many things across too many different setups. So we've made some focused changes before the first stable release:
-
-- Distro-agnostic features are being removed for now. Grix will focus tightly on Ubuntu-based systems with KDE Plasma (including Griffin Talon Edition and other Ubuntu flavors/spins). This makes it far more reliable and easier to maintain. Other Ubuntu spins and flavors will still benefit significantly from the improvements.
-
-- System health checks are being narrowed down. Other dedicated Griffin tools are now handling broader system optimization and health, so Grix can concentrate on the specific, high-frustration problems that fall outside those tools — the exact things that usually send new users to forums or Reddit.
- 
-- Process Sentry and Kernel Autotune have been moved into a new unified tool called Game Tune Hub. This keeps performance tuning clean and centralized.
-
-- Postinstaller will now handle environment and app bundle provisioning. Workflow-based automation (e.g., "I'm a gamer/streamer/VTuber") will happen after first boot through simple user choices instead of trying to detect and configure everything automatically.
-
-These changes make Grix lighter, more predictable, and much more reliable, especially across varying kernels and tricky updates like PipeWire. The goal remains exactly the same: 
-
-- a local, transparent companion that spots real issues, explains them plainly, shows you exactly what it will do, asks for your approval, and logs everything so you can learn or undo changes.
-
-- Grix will still serve as the friendly control center that launches the right Griffin tool when needed and guides you through common headaches (hardware quirks, audio glitches, driver situations, etc.) without forcing you to become a terminal expert.
-
-We're taking the time to get this foundation solid because first impressions matter.
-
-Thanks for your patience, this rework will result in a much smoother and more trustworthy experience. The rest of Griffin (FanHub, XKM, Griffin Migrate, Appify, etc.) continues moving forward, and the overall vision of a frustration-free switch from Windows stays fully on track.
-
-## What Is Grix?
-
-Grix is a desktop application for Linux that watches over your system, explains what it finds in plain English, and, when it can, fixes things for you with one click.
-
-Think of it like a friendly dashboard that sits between you and the raw complexity of Linux. When something goes wrong, audio suddenly stops working, a game refuses to launch, the system is running low on disk space, a background service has crashed, Grix spots it, tells you what it means in everyday language, and offers to sort it out. No terminal required.
-
-Under the hood, Grix scans dozens of system properties: running services, audio stack health, GPU drivers, disk space, firmware, network, gaming compatibility layers, streaming tools, VTuber software dependencies, CPU power profiles, backup status, drive health (SMART), system logs, and more. Every issue it finds is ranked by severity — **Error**, **Warning**, or **Info** — so you can see at a glance what needs attention right now versus what is merely worth knowing.
-
-Beyond fixing things, Grix doubles as a learning tool. Each issue card links to a contextual lesson in the built-in "Learn Terminal" section, which teaches you what the underlying command actually does and why. You can act now and learn later, or read before you click; it is entirely up to you.
-
-Grix stores everything locally. There is no telemetry, no cloud account, no data sent anywhere. It reads from the kernel's own files and standard system tools, and it never uses `shell=True` to run commands (a common security pitfall). Privilege escalation for fixes that need it goes through PolicyKit (`pkexec`) where available, falling back to `sudo`.
-
-Grix also uses tray Icons to tell you when a scan happens, when it is asleep, when an issue arises with the level of severity, when everything is fine, and you can right-click to make it quit or sleep.
-
-UI may change from the current look based on the change of Grix.
-
-<img width="300" height="300" alt="GrixFix" src="https://github.com/user-attachments/assets/44bf0d65-b20c-4ce0-8955-fdd9c3ab1216" />
-<img width="300" height="300" alt="GrixStudy" src="https://github.com/user-attachments/assets/aa10de42-f782-40e0-afab-90b3ef8af0c3" />
-<img width="300" height="300" alt="Grixsleep" src="https://github.com/user-attachments/assets/0e264a0e-1ffe-4510-a182-d06ab6e57d7f" />
-<img width="300" height="300" alt="Grixyellow" src="https://github.com/user-attachments/assets/75d04136-2827-449f-b98c-93f5d5191628" />
-<img width="300" height="300" alt="Grixred" src="https://github.com/user-attachments/assets/5424b7dc-6e15-4665-83f9-8c3a3a834fe4" />
-<img width="300" height="300" alt="Grixgreen" src="https://github.com/user-attachments/assets/7e61a9b4-7f07-4dad-b9d9-39431a8f6ab0" />
-
+<p align="center">
+  <b>The system troubleshooter and learning companion Linux never shipped with.</b><br>
+  Built for people who switched from Windows and want their computer to just work.
 
 ---
 
+## What is Grix?
+
+Grix is a desktop app for Debian and Ubuntu-based Linux systems that does two things most distros leave you to figure out yourself:
+
+**It explains what's wrong and fixes it safely.** System Sentinel scans your system for common health issues, broken packages, failing services, disk bloat, outdated software, network problems, an inactive firewall, stale logs, and surfaces each one in plain language with a **Repair Preview** showing the exact command that will run, why it's needed, what will change, and the risk level. You approve every single action before anything happens. Nothing runs silently.
+
+**It teaches you Linux while you use it.** Linux Academy walks you through 29 lessons across three skill tracks. Beginner, Intermediate, and Advanced, using a built-in practice terminal that simulates a real filesystem so you can try commands without risking anything on your actual system. Every lesson is written the way Grix explains repairs: in plain English, by a human, for a human.
+
+The goal is simple: close the gap that sends new Linux users back to Windows when something breaks, not by hiding what's happening, but by explaining it well enough that you understand a little more every time.
 
 ---
 
-## Hubs — Dedicated Hardware Management Panels (these may get their own tool, or go into Game Tune Hub)
+## What Grix Does
 
-Beyond the general scanner, Grix includes a set of purpose-built **Hubs**: focused panels for hardware categories that are complex enough to deserve their own dedicated interface. Where the scanner surfaces a problem and offers a fix, a Hub gives you the full picture — what hardware you have, what driver is loaded, what your options are, and buttons to act on all of it without leaving the application.
+### 🛡️ System Sentinel
 
-### GPU Hub
+Runs scheduled or on-demand scans of your system and reports findings in plain English — no raw error codes. Each finding has:
 
-The GPU Hub is a full graphics driver manager for NVIDIA, AMD, and Intel GPUs. It reads your actual hardware via PCI IDs and recommends the correct driver, including which NVIDIA generation branch applies to your specific card (current 580.xx, legacy 470.xx for Kepler, or nouveau for unsupported older hardware).
+- **An explanation** of what's wrong and why it matters
+- **A Repair Preview** with the exact command Grix will run, risk level, and what will change
+- **Your approval** before anything happens — no silent changes, ever
+- **A repair log** with rollback hints if something wasn't what you expected
 
-**What it shows:**
-- Detected GPU names and PCI IDs for all three vendors
-- Current installed driver version and session type (X11 or Wayland)
-- Architecture label (Maxwell, Turing, Ada Lovelace, RDNA 3, Intel Arc, etc.)
-- Wayland-specific caveats (modeset requirement, GBM/EGL support thresholds)
-- Mesa version and ROCm status for AMD
-- OpenGL renderer string and Vulkan availability
-- While it does help with RTX 50 and RDNA 4, this does not mean upstream compatibility is fixed, those are projects not affiliated with Griffin or Grix
+Checks on every scan:
 
-**What you can do with it:**
-- Install the NVIDIA open kernel module (recommended for Turing and newer) or the proprietary driver, per distro, with RPM Fusion enabling on Fedora, non-free repo setup on Debian, and AUR handling on Arch
-- Install the NVIDIA 470 legacy driver for Kepler cards
-- Update NVIDIA drivers and rebuild DKMS modules
-- Fix Wayland display parameters (`nvidia-drm.modeset=1`) or X11 tearing via ForceCompositionPipeline
-- Install or update Mesa and AMD ROCm
-- Install Intel Media Driver (VAAPI) and `intel-gpu-tools`
-- Run quick GPU diagnostics directly in the panel (nvidia-smi, glxinfo, vulkaninfo, vainfo)
+| Category | What it looks for |
+|---|---|
+| Package management | Broken dependencies, interrupted installs, available updates, APT lock conflicts |
+| Disk space | Root partition usage, APT cache, old kernels, unused Flatpak runtimes, old Snap revisions, oversized backup snapshots |
+| Services | Failed systemd units, audio stack health (PipeWire / PulseAudio) |
+| Networking | Internet connectivity, firewall (ufw) status |
+| System logs | Journal size, recent error clusters |
+| Files | Home directory files unexpectedly owned by root |
+| Boot | Most recent boot time |
 
-The hub also includes a plain-English Wayland vs X11 guide explaining which display protocol to use for each GPU family and why.
-<img width="1920" height="1080" alt="Screenshot_20260409_125335" src="https://github.com/user-attachments/assets/1c513cc4-ef2b-4498-9bde-5c29ea48ef68" />
-<img width="1920" height="1080" alt="Screenshot_20260409_125325" src="https://github.com/user-attachments/assets/5b71762f-62a6-451d-9ddb-9678ed722921" />
+<img width="1920" height="1080" alt="Screenshot_20260706_145536" src="https://github.com/user-attachments/assets/63ea4d1a-5950-46b9-9be0-12fba4ff1f4a" />
 
----
+Auto-scanning runs in the background on a schedule you control (hourly by default, or daily, weekly, or never). The mascot and tray icon update when results change — you don't need to open the app to know if something needs attention.
 
-### WiFi Hub
+### 🎓 Linux Academy
 
-WiFi on Linux is one of the most frequent pain points, particularly for Realtek and Broadcom chips, which often ship with incomplete or buggy in-kernel drivers. The WiFi Hub reads your actual hardware (both PCI and USB adapters) and matches it against a driver database to tell you exactly what you have, what module is loaded, and what to do if it is not working.
+Three tracks, 29 hands-on lessons, one sandboxed practice terminal per lesson. The sandbox simulates a complete Linux filesystem — everything you type there stays there, nothing touches your real system.
 
-**What it shows:**
-- All detected WiFi chips (PCI and USB), matched by vendor/product ID
-- Current kernel module status (loaded/installed but not loaded / not installed)
-- rfkill status (soft and hard block detection)
-- NetworkManager and wpa_supplicant / iwd service state
+- **Beginner: Getting Comfortable** — the terminal, the filesystem, files and directories, permissions, common commands, software management
+- **Intermediate: Thinking Like an Admin** — pipes, grep, processes, services, logs, systemd, networking basics, your first shell script
+- **Advanced: System Mastery & Local Control** — text processing (find, sed, awk, xargs), Flatpak and sandboxed apps, backups with tar and rsync, SSH and key-based authentication, customizing your shell
 
-**What you can do with it:**
-- Install the correct driver per detected chip — package installs for standard chips, automated GitHub DKMS clone-and-install for out-of-tree Realtek drivers (rtw89, rtw88, rtl8821ce, 88x2bu, 8814au)
-- Install Broadcom proprietary (STA/`wl`) or open-source (`brcmfmac`) drivers with correct blacklisting of conflicting modules
-- Install Intel `iwlwifi` firmware or MediaTek firmware packages
-- Reload individual modules, blacklist conflicting ones
-- Run `rfkill unblock wifi` and restart NetworkManager from the panel
-- Access a built-in WiFi diagnostics reference (lspci, lsusb, iwconfig, rfkill, nmcli, dmesg)
+<img width="1920" height="1080" alt="Screenshot_20260706_145336" src="https://github.com/user-attachments/assets/d1b4e4be-5212-43e8-a402-b0282a57bb3a" />
 
-For Realtek chips, especially, the hub automates the otherwise manual process of cloning a community driver repository, running DKMS install, loading the module, and persisting it at boot.
-<img width="1920" height="1080" alt="Screenshot_20260409_125424" src="https://github.com/user-attachments/assets/3c10db1e-49a6-4448-8326-13db720a4a7d" />
+### 🔍 Explain This Error
 
----
+Paste any error message from a terminal, a log file, or a crash dialog, and Grix looks it up against a knowledge base of common Linux system errors (only the ones it knows about). You get a plain-language explanation of what it means, diagnosis steps, and what to try next. When something is outside what the knowledge base covers, app-specific bugs, Python tracebacks, hardware failures, Grix says so explicitly rather than guessing. The "What does this recognize?" panel always shows the exact current scope of what's covered.
 
-### Controller Hub
+### 📅 System Timeline
 
-Getting a controller working on Linux, particularly Xbox controllers, means choosing the right kernel driver from several competing options that cannot safely coexist. The Controller Hub manages this for you: it shows what is installed, explains the differences between the drivers, and handles installation with automatic blacklisting of anything that would conflict.
+"My system was fine yesterday. What changed?" System Timeline correlates recent journal errors with recent package changes so you're not guessing blind about what broke what.
 
-**Supported drivers:**
+### 🖥️ System Information
 
-- **xpadneo** — The recommended Bluetooth driver for Xbox One, Xbox Elite Series 2, and Xbox Series X\|S controllers. Adds proper trigger rumble, accurate axis ranges, battery reporting, and support for 8BitDo, GuliKit KingKong, and GameSir controllers. Bluetooth only; use xone for USB.
-- **xone + xpad-noone** — For USB and Xbox Wireless Dongle connections. xone replaces the built-in `xpad` driver for Xbox One/Series hardware; xpad-noone is its companion for older Xbox/Xbox 360 controllers that need legacy `xpad` support alongside xone. These two are designed to run as a pair.
-- **xpad** — The upstream kernel legacy driver (original Xbox, Xbox 360, Xbox 360 Wireless). The fallback option when xone is not appropriate.
-- **hid-tmff2** — Force feedback driver for Thrustmaster racing wheels (T300RS, T248, TX, T128, T598, TS-PC, TS-XW). Does not conflict with any Xbox driver and can be installed alongside any of the above.
-- These are third-part drivers, those projects are handled outside of Griffin and Grix by different maintainers.
+A live view of your hardware and configuration — hostname, distro, kernel, CPU, RAM, GPU, driver version — pulled from your system directly and, if Kernel Autotune is installed, enriched with its full tuning profile. When something goes wrong that Grix can't fix on its own, this page gives you everything you'd need to share when asking for help.
 
-**What it shows:**
-- Live status for each driver (active/installed but not loaded/not installed)
-- Which modules are currently loaded
-- Which blacklist entries are in effect
+### 🦉 A mascot that actually tells you something
 
-**What you can do with it:**
-- Install any driver with one click — including DKMS build and module loading
-- Switch between drivers with automatic blacklisting of the outgoing one
-- Manually blacklist or un-blacklist individual modules
-- Configure xpadneo quirks for third-party controllers (8BitDo Nintendo layout swap, GameSir trigger rumble disable, GuliKit MAC-based flags) via an editable config file and one-click driver reload
-- Access a full pairing and connection guide for Bluetooth (bluetoothctl flow), USB, and Xbox Wireless Dongle connections
-- Run controller detection checks (`ls /dev/input/js*`, `jstest`, `evtest`, `fftest`) directly from the panel
-
-<img width="1920" height="1080" alt="Screenshot_20260409_125244" src="https://github.com/user-attachments/assets/72d79fec-0809-4102-afc6-9285d8f73629" />
+Grix's mascot changes mood based on what's happening: sleepy when idle, studying while scanning, working while applying a fix, and green / yellow / red depending on system health. The same state shows in the system tray icon, so you can see whether anything needs attention without opening the app.
 
 ---
 
-## CPU Hub in progress
+## What Grix Doesn't Do
+
+Being upfront about this matters as much as the feature list. Grix **does not**:
+
+- Diagnose individual application crashes or bugs — it checks system-level health, not the internal behavior of every program you have installed
+- Replace hardware diagnostic tools — it can surface relevant log entries, but tools like `smartctl` and `memtest86+` are the right choice for failing drives and RAM
+- Act as a security scanner or intrusion detection system — the firewall check confirms ufw is active, nothing more
+- Run on non-Debian/Ubuntu-based distros reliably — checks depend on `apt`/`dpkg` conventions
+- Perform open-ended analysis — System Sentinel only runs its defined checks plus any installed plugins, nothing more
+
+The same applies to Explain This Error: it covers Linux system errors (packages, permissions, disk, networking, services, shell), not application bugs, programming errors, or anything outside that defined scope.
 
 ---
 
-## Who Is Grix *Not* For?
+## Grix Works With Your System, Not Against It
 
-**Users with highly non-standard or custom workflows.** Grix is built around common, well-documented use cases. If you have a heavily customized audio routing pipeline, a bespoke kernel build, a non-standard display manager, or niche hardware with out-of-tree drivers, Grix may not know how to evaluate your setup correctly. It will still catch many general issues, but you should not expect it to reason about edge cases it was never designed for. The plugin system (see below) exists partly to address this over time.
+Grix is specifically designed to never compete with or undermine the tools your system already uses.
 
-**Enterprise and managed environments.** Some of Grix's checks are useful in any context: disk space, service health, drive SMART status, but Grix is not an IT management platform. It does not understand GPO-equivalents, centrally managed software repositories, mandatory access control policies (SELinux, AppArmor in enforcing mode), or corporate proxy configurations. If you are managing a fleet of machines or working within a locked-down enterprise image, Grix will help with general hygiene, but it is not a replacement for purpose-built IT tools.
+Every fix Grix suggests routes through **`pkexec`** — the same mechanism Linux desktop environments use for privileged actions — and shows you a graphical authentication prompt with a Grix-branded, narrowly scoped permission description. You always see exactly what will run before you authorize it, and you can copy any fix command and run it yourself in a terminal instead if you prefer.
 
-**Users who prefer the terminal.** If you are comfortable with `systemctl`, `journalctl`, `dmesg`, `pacman`, and friends, Grix does not add much that you cannot do yourself. It is a convenience tool for users who do not want to interact with those tools directly, not a power-user interface over them.
+When scheduling background scans, Grix checks whether APT or dpkg is actively running before starting and backs off if they are. Package management is never interrupted, never raced against, and never duplicated. Grix reads what the package manager knows; it doesn't try to replace it.
 
-**Purists.** Grix makes opinionated decisions about what a healthy Linux desktop looks like. It may flag the absence of tools you intentionally do not have, or suggest fixes that do not align with your philosophy. You can dismiss individual issues and permanently mark them resolved, or disable entire check categories in Settings, but if you prefer zero automation and zero suggestions, Grix is not for you.
+Nothing Grix does touches your system without your explicit approval — no silent background changes, no auto-applying fixes, no sending data anywhere. Everything stays local.
 
 ---
 
-## Grix Covers a Lot, But Not Everything
+## The Plugin System
 
-Grix is a broad-coverage companion, not a specialist tool. It is very good at catching the common things that go wrong on a Linux desktop across a wide range of distros and use cases. It is not a replacement for dedicated tools when you need to go deep: `smartmontools` for forensic drive analysis, `perf` for CPU profiling, Wireshark for network forensics, or a full observability stack for servers.
+Grix is designed to grow without you having to wait for an official update. Any developer — or any power user comfortable writing a Python file — can add new System Sentinel checks, new Linux Academy lesson tracks, or entirely new UI panels by dropping a plugin folder into:
 
-That is why Grix has a **plugin system**. Third parties, and you, can write Python plugins that add custom checks to the Grix scanner without modifying Grix itself. Drop a `.py` file into `~/.local/share/grix/plugins/` and it is loaded automatically on next launch. Plugins register themselves with `register_plugin()` and return standard `Issue` objects that appear in the main scan UI exactly like built-in checks. This makes Grix extensible for niche workflows without bloating the core.
+```
+~/.local/share/grix/plugins/
+```
+
+That's it. Grix picks it up on the next launch (or when you click **Reload Plugins** in Settings); no reinstall needed. This works identically whether you're running Grix from source, a pip install, or an AppImage; the plugin directory is always on your real, writable filesystem.
+
+### How plugins work
+
+A plugin is a folder with two files:
+
+```
+my_plugin/
+├── plugin.json   # name, version, author, description
+└── plugin.py     # registers checks, lessons, or panels
+```
+
+`plugin.py` defines a single `register(api)` function. From there, the API gives you three extension points:
+
+```python
+def register(api):
+    # Add a new System Sentinel check
+    api.register_check(my_check_function)
+
+    # Add a source with a variable number of findings per scan
+    api.register_dynamic_checks(my_findings_provider)
+
+    # Add a new Linux Academy lesson track
+    api.register_lesson_track(my_track)
+
+    # Add a new top-level UI panel with its own sidebar button
+    api.register_panel("my_panel", "My Panel Label", MyPanelWidget)
+```
+
+A check function takes no arguments and returns a `CheckResult` — the same dataclass Grix's own 13 built-in checks use, with status, summary, explanation, suggested fix commands, risk level, and rollback hint. Your check goes through exactly the same Repair Preview and approval workflow as a built-in check.
+
+**Dependency handling:** plugins that only use Python's standard library work immediately. If a plugin needs a third-party package, install it into the plugin lib directory:
+
+```bash
+pip install --target ~/.local/share/grix/plugins/lib <package>
+```
+
+Grix adds that directory to `sys.path` automatically if it exists.
+
+**Safety:** a plugin runs with the same privileges as Grix itself — there's no sandboxing, so only install plugins from sources you trust. A plugin that fails to load, has a missing manifest, raises during `register()`, or was built against a different API version is skipped with a recorded error visible in **Settings → Plugins** — it never crashes the rest of the app.
+
+The **Griffin Linux Suite integration is itself an ordinary plugin** (`grix/plugins/griffin_suite/`), useful as a working example. It reads status files from `~/.local/share/griffin/<tool-name>/status.json` and surfaces findings as System Sentinel checks. Any tool that writes a file in that format gets picked up automatically — no fixed list of recognized tool names.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md#the-plugin-system) for the full plugin API reference.
+
+---
+
+## Grix Is Standalone, but Works Best With the Griffin Linux Suite
+
+Grix is completely self-contained and useful on any Debian/Ubuntu system with nothing else installed. But if you want a more complete experience built around the same idea — no terminal required, plain-language explanations, safe by default, designed for the Windows switcher — the rest of the Griffin Linux Suite fits together with Grix naturally.
+
+Each tool is independent. Install any one of them, all of them, or none of them. They don't require each other to function.
+
+---
+
+### ⚡ [Kernel Autotune](https://github.com/bobbycomet/kernel-autotune-V2)
+
+Intelligently tunes Linux kernel parameters for your specific hardware: swappiness, dirty ratios, VFS cache pressure, CPU governor, TCP congestion control, ZRAM/Zswap configuration, and I/O scheduler. Detects whether you're on a desktop, laptop, or handheld, identifies your kernel (XanMod, Liquorix, Zen, CachyOS, or mainline), and applies a tailored profile automatically. Works as a systemd service with no ongoing configuration needed.
+
+**With Grix:** Grix reads Kernel Autotune's `state.json` to show your current tuning profile under **Settings → System Info**, so you always know what your kernel is doing and can share that context when asking for help. If Kernel Autotune detects a problem (a governor not applied, a step that failed), its findings can surface as System Sentinel checks through the plugin system.
+
+---
+
+### 🔒 [Process Sentry](https://github.com/bobbycomet/Process-Sentry)
+
+A predictive, adaptive process priority daemon. Quietly watches in the background and throttles processes that are hogging CPU, memory, or I/O before they make your desktop sluggish — without ever killing anything. Learns which programs are repeat offenders over time and gets faster at reining them in. Automatically backs off during games and is aware of Appify PWA apps so those are never throttled.
+
+**With Grix:** Process Sentry runs as a systemd service Grix's failed-service check can monitor, and can report findings through the plugin system the same way Kernel Autotune does.
+
+---
+
+### 🌀 [XKM — Multi-Kernel Manager](https://github.com/bobbycomet/XKM-Multi-Kernel-Manager)
+
+A graphical kernel manager for Ubuntu-based systems. Browse, install, hold, and remove kernels — XanMod, Liquorix, and mainline — without touching the terminal. Handles repository setup, DKMS, bootloader updates, and kernel pinning from one clean interface. Includes an auto-remove button that keeps your active and most recent kernels and cleans up the rest.
+
+**With Grix:** Grix's old-kernels check detects accumulated kernel versions taking up disk space and points toward cleaning them up. XKM is exactly the tool to do that cleanup with full visibility into which kernels are installed and which is currently running.
+
+---
+
+### 🌐 [Appify](https://github.com/bobbycomet/Appify)
+
+Turns any website into a real desktop app in under a second. Each app gets an isolated browser profile, its own taskbar icon and application menu entry, and optional extension presets. Supports every browser you have installed (native, Flatpak, and Snap), works correctly on both Wayland and X11, and includes cloud gaming-aware kiosk mode with gamepad support. No userChrome.css, no fragile hacks.
+
+**With Grix:** Appify apps are automatically recognized by Process Sentry and exempt from throttling. Grix's Flatpak and Snap checks are aware of the kinds of browser runtimes Appify-launched apps use.
+
+---
+
+## Griffin Updater []()
+
+Griffin ships with a dedicated updater for all of its tools. It checks each tool's GitHub repo for updates and lets you update from a simple GUI, no terminal required. There's no auto-update by design; you choose when to update, so you can see how a release lands before committing.
+
+If a Griffin tool isn't installed yet, Griffin Updater handles that too. Click Install next to any tool, and it takes care of the rest. For tools available in both AppImage and Deb formats, choose your preference once, and the updater remembers it.
+
+- **AppImage** (Deb also available where noted): Appify, Griffin Hub, Grix, Fan Hub, Griffin Updater, XKM
+- **Deb only**: Griffin Persona
+
+---
+
+### 🌡️ Fan Hub *(coming soon)*
+
+Graphical fan curve editor for Linux. Fine-grained control over fan behavior per-sensor, without needing to drop to a terminal or edit config files by hand.
+
+**With Grix:** Fan Hub will report its status through the same Griffin plugin format, surfacing any fan control issues directly in System Sentinel alongside Grix's own health checks.
+
+---
+
+## Getting Started
+
+```bash
+git clone https://github.com/bobbycomet/Grix
+cd grix
+python3 -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+python3 -m grix.main
+```
+
+For a full install, AppImage packaging, and the optional PolicyKit integration (which gives Grix-branded, narrowly-scoped admin prompts instead of a generic `pkexec` dialog), see [CONTRIBUTING.md](CONTRIBUTING.md#requirements).
+
+**Requirements:** Python 3.10+, a Debian/Ubuntu-based system (Ubuntu, Mint, Pop!_OS, Zorin OS, elementary OS, and similar).
+
+---
+
+## Contributing and Community
+
+Bug reports, feature requests, plugin ideas, and pull requests are all welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full architecture guide, how the Repair Preview safety model works, how to write a plugin, and documented gotchas that have caused real bugs (worth reading before adding a new check).
+
+For help with your system, questions about the Griffin Linux Suite, or just to share what you've built with the plugin system:
+
+**[Join the Griffin Linux Discord →](https://discord.gg/fMCpeNCxhv)**
 
 ---
 
@@ -198,23 +279,6 @@ AppImage requires FUSE to mount the image at runtime. Grix itself checks for bot
 - A systemd-based Linux distribution (Debian/Ubuntu)
 - KDE
 - JetBrains Mono font (optional but recommended; used for terminal-style detail views)
-
-### Supported Distros
-
-Grix detects the running distro via `/etc/os-release` and adapts all install commands and fix steps accordingly. Supported families:
-
-| Family | Detection | Package Manager |
-|---|---|---|
-| Debian/Ubuntu and derivatives | `apt` + `dpkg` present | `apt` |
-
----
-
-### Security Notes
-
-- Grix never uses `shell=True` for subprocess calls. All commands are passed as lists to prevent shell injection.
-- Privilege escalation uses `pkexec` (PolicyKit, graphical prompt) when available, falling back to `sudo`. It never stores or caches credentials.
-- All file reads use Python's standard library directly from `/proc`, `/sys`, and `/etc`. No third-party scanning dependencies.
-- The plugin system loads arbitrary Python files from a user-controlled directory. Only install plugins you trust.
 
 ---
 
