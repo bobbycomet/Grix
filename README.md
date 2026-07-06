@@ -207,7 +207,7 @@ Turns any website into a real desktop app in under a second. Each app gets an is
 
 ---
 
-## Griffin Updater []()
+## [Griffin Updater](https://github.com/bobbycomet/GriffinUpdater/tree/main)
 
 Griffin ships with a dedicated updater for all of its tools. It checks each tool's GitHub repo for updates and lets you update from a simple GUI, no terminal required. There's no auto-update by design; you choose when to update, so you can see how a release lands before committing.
 
@@ -218,7 +218,7 @@ If a Griffin tool isn't installed yet, Griffin Updater handles that too. Click I
 
 ---
 
-### 🌡️ Fan Hub *(coming soon)*
+### 🌡️ [Fan Hub](https://github.com/bobbycomet/Fan-Hub)
 
 Graphical fan curve editor for Linux. Fine-grained control over fan behavior per-sensor, without needing to drop to a terminal or edit config files by hand.
 
