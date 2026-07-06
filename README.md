@@ -1,7 +1,5 @@
 # Grix a Linux System Companion
 
-> **Griffin Linux project** · GPLv3 · AppImage (coming soon) · v2.5.0
-
 ---
 <p align="center">
 <img width="300" height="300" alt="Grix" src="https://github.com/user-attachments/assets/4dc225b4-21e0-4983-bec2-8a86209a3572" />
