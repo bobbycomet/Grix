@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+
+<!--
+  Grix - PolicyKit policy
+  ==========================
+  Grants permission to run grix-helper (installed at
+  /usr/local/bin/grix-helper or /usr/bin/grix-helper) as root via
+  pkexec, with a native graphical authentication prompt.
+
+  grix-helper itself only accepts a small fixed set of subcommands
+  (see policykit/grix-helper) mirroring System Sentinel's built-in
+  repair actions - it does not execute arbitrary shell input. This
+  keeps the privilege boundary narrow: authenticating here only ever
+  grants access to those specific, well-understood maintenance
+  operations, never an arbitrary root shell.
+
+  Install this file to /usr/share/polkit-1/actions/ and install
+  grix-helper to /usr/bin/grix-helper (see install.sh).
+-->
+<policyconfig>
+
+  <vendor>Grix</vendor>
+  <vendor_url>https://github.com/griffin-linux/grix</vendor_url>
+  <icon_name>grix</icon_name>
+
+  <action id="com.griffinlinux.grix.run-helper">
+    <description>Run a Grix system repair action</description>
+    <message>Authentication is required for Grix to apply this system repair</message>
+    <icon_name>grix</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/grix-helper</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">TRUE</annotate>
+  </action>
+
+</policyconfig>

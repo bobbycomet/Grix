@@ -1,0 +1,8 @@
+{
+  "id": "griffin_suite",
+  "name": "Griffin Linux Suite Integration",
+  "version": "2.0.0",
+  "author": "Griffin Linux",
+  "description": "Surfaces findings from any Griffin Suite tool (or any other tool) that writes a status.json file under ~/.local/share/griffin/<tool-name>/ - no fixed list of tool names, any tool following the format is picked up automatically.",
+  "grix_api_version": 1
+}

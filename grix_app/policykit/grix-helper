@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+# =============================================================================
+# grix-helper - privileged operations wrapper for Grix
+# =============================================================================
+# This script is the ONLY thing Grix's PolicyKit action is allowed to
+# run as root (see policykit/com.griffinlinux.grix.policy). It does not
+# accept arbitrary shell commands - only a fixed, allowlisted set of
+# subcommands matching the safe-repair actions System Sentinel offers.
+# This keeps the privilege boundary narrow: even if something else on
+# the system tried to invoke this helper, it can't be used to run
+# anything other than these specific, well-understood operations.
+#
+# Usage:
+#   grix-helper <subcommand> [args...]
+#
+# Subcommands (mirrors System Sentinel's built-in fixes):
+#   dpkg-configure                      sudo dpkg --configure -a
+#   fix-broken                          sudo apt --fix-broken install
+#   apt-update                          sudo apt update
+#   apt-clean                           sudo apt clean
+#   apt-autoremove                      sudo apt autoremove
+#   apt-upgrade                         sudo apt update && sudo apt upgrade -y
+#   journal-vacuum-time <duration>      sudo journalctl --vacuum-time=<duration>
+#   journal-vacuum-size <size>          sudo journalctl --vacuum-size=<size>
+#   restart-service <unit>              sudo systemctl restart <unit>
+#   restart-networkmanager              sudo systemctl restart NetworkManager
+#   flush-dns                           sudo resolvectl flush-caches
+#   chown-home <user> <path...>         sudo chown <user>:<user> <path...>
+#   enable-firewall                     sudo ufw enable
+#   firewall-status                     sudo ufw status
+#   remove-packages <pkg...>            sudo apt remove --purge <pkg...>
+#
+# This script is intentionally NOT meant to be run directly as a normal
+# user for anything beyond --help; it's invoked by pkexec (or sudo, as
+# a fallback) with root privileges.
+# =============================================================================
+
+set -euo pipefail
+
+UNIT_NAME_RE='^[a-zA-Z0-9@._-]+$'
+PKG_NAME_RE='^[a-zA-Z0-9][a-zA-Z0-9+.:-]*$'
+USER_NAME_RE='^[a-z_][a-z0-9_-]*$'
+DURATION_RE='^[0-9]+(s|m|h|d|w|month|year)?$'
+SIZE_RE='^[0-9]+(K|M|G|T)?$'
+
+die() {
+    echo "grix-helper: $*" >&2
+    exit 1
+}
+
+usage() {
+    grep '^#   ' "$0" | sed 's/^#   //'
+}
+
+[[ $# -ge 1 ]] || { usage; exit 1; }
+
+subcommand="$1"
+shift
+
+case "$subcommand" in
+    --help|-h|help)
+        usage
+        exit 0
+        ;;
+
+    dpkg-configure)
+        exec dpkg --configure -a
+        ;;
+
+    fix-broken)
+        exec apt-get --fix-broken install -y
+        ;;
+
+    apt-update)
+        exec apt-get update
+        ;;
+
+    apt-clean)
+        exec apt-get clean
+        ;;
+
+    apt-autoremove)
+        exec apt-get autoremove -y
+        ;;
+
+    apt-upgrade)
+        apt-get update
+        exec apt-get upgrade -y
+        ;;
+
+    journal-vacuum-time)
+        [[ $# -eq 1 ]] || die "journal-vacuum-time requires exactly one duration argument"
+        [[ "$1" =~ $DURATION_RE ]] || die "invalid duration: $1"
+        exec journalctl "--vacuum-time=$1"
+        ;;
+
+    journal-vacuum-size)
+        [[ $# -eq 1 ]] || die "journal-vacuum-size requires exactly one size argument"
+        [[ "$1" =~ $SIZE_RE ]] || die "invalid size: $1"
+        exec journalctl "--vacuum-size=$1"
+        ;;
+
+    restart-service)
+        [[ $# -eq 1 ]] || die "restart-service requires exactly one unit name"
+        [[ "$1" =~ $UNIT_NAME_RE ]] || die "invalid unit name: $1"
+        exec systemctl restart "$1"
+        ;;
+
+    restart-networkmanager)
+        exec systemctl restart NetworkManager
+        ;;
+
+    flush-dns)
+        exec resolvectl flush-caches
+        ;;
+
+    chown-home)
+        [[ $# -ge 2 ]] || die "chown-home requires a username and at least one path"
+        target_user="$1"
+        shift
+        [[ "$target_user" =~ $USER_NAME_RE ]] || die "invalid username: $target_user"
+        # Only allow paths inside that user's own home directory - this
+        # prevents the helper from being used to chown arbitrary
+        # system files even if something upstream passed a bad path.
+        home_dir=$(getent passwd "$target_user" | cut -d: -f6) || die "no such user: $target_user"
+        [[ -n "$home_dir" ]] || die "could not resolve home directory for $target_user"
+        for path in "$@"; do
+            case "$path" in
+                "$home_dir"/*) ;;
+                *) die "refusing to chown path outside $home_dir: $path" ;;
+            esac
+        done
+        exec chown "$target_user:$target_user" "$@"
+        ;;
+
+    enable-firewall)
+        exec ufw enable
+        ;;
+
+    firewall-status)
+        exec ufw status
+        ;;
+
+    remove-packages)
+        [[ $# -ge 1 ]] || die "remove-packages requires at least one package name"
+        for pkg in "$@"; do
+            [[ "$pkg" =~ $PKG_NAME_RE ]] || die "invalid package name: $pkg"
+        done
+        exec apt-get remove --purge -y "$@"
+        ;;
+
+    *)
+        die "unknown subcommand: $subcommand (run with --help for a list)"
+        ;;
+esac

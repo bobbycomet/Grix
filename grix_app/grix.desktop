@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Grix
+Comment=Friendly Linux system troubleshooter and learning companion
+Exec=grix
+Icon=grix
+Terminal=false
+Categories=System;Education;
