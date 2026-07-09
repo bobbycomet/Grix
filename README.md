@@ -35,11 +35,11 @@ The goal is simple: close the gap that sends new Linux users back to Windows whe
 
 ### 🛡️ System Sentinel
 
-Runs scheduled or on-demand scans of your system and reports findings in plain English — no raw error codes. Each finding has:
+Runs scheduled or on-demand scans of your system and reports findings in plain English, no raw error codes. Each finding has:
 
 - **An explanation** of what's wrong and why it matters
 - **A Repair Preview** with the exact command Grix will run, risk level, and what will change
-- **Your approval** before anything happens — no silent changes, ever
+- **Your approval** before anything happens, no silent changes, ever
 - **A repair log** with rollback hints if something wasn't what you expected
 
 Checks on every scan:
@@ -74,7 +74,7 @@ Paste any error message from a terminal, a log file, or a crash dialog, and Grix
 
 ### 📅 System Timeline
 
-"My system was fine yesterday. What changed?" System Timeline correlates recent journal errors with recent package changes so you're not guessing blind about what broke what.
+"My system was fine yesterday. What changed?" System Timeline correlates recent journal errors with recent package changes, so you're not guessing blind about what broke what.
 
 ### 🖥️ System Information
 
@@ -82,7 +82,7 @@ A live view of your hardware and configuration — hostname, distro, kernel, CPU
 
 ### 🦉 A mascot that actually tells you something
 
-Grix's mascot changes mood based on what's happening: sleepy when idle, studying while scanning, working while applying a fix, and green / yellow / red depending on system health. The same state shows in the system tray icon, so you can see whether anything needs attention without opening the app.
+Grix's mascot changes mood based on what's happening: sleepy when idle, studying while scanning, working while applying a fix, and green/yellow/red depending on system health. The same state shows in the system tray icon, so you can see whether anything needs attention without opening the app.
 
 ---
 
@@ -114,7 +114,7 @@ Nothing Grix does touches your system without your explicit approval — no sile
 
 ## The Plugin System
 
-Grix is designed to grow without you having to wait for an official update. Any developer — or any power user comfortable writing a Python file — can add new System Sentinel checks, new Linux Academy lesson tracks, or entirely new UI panels by dropping a plugin folder into:
+Grix is designed to grow without you having to wait for an official update. Any developer, or any power user comfortable writing a Python file, can add new System Sentinel checks, new Linux Academy lesson tracks, or entirely new UI panels by dropping a plugin folder into:
 
 ```
 ~/.local/share/grix/plugins/
@@ -175,7 +175,7 @@ Each tool is independent. Install any one of them, all of them, or none of them.
 
 ---
 
-### ⚡ [Kernel Autotune](https://github.com/bobbycomet/kernel-autotune-V2)
+### [Kernel Autotune](https://github.com/bobbycomet/kernel-autotune-V2)
 
 Intelligently tunes Linux kernel parameters for your specific hardware: swappiness, dirty ratios, VFS cache pressure, CPU governor, TCP congestion control, ZRAM/Zswap configuration, and I/O scheduler. Detects whether you're on a desktop, laptop, or handheld, identifies your kernel (XanMod, Liquorix, Zen, CachyOS, or mainline), and applies a tailored profile automatically. Works as a systemd service with no ongoing configuration needed.
 
@@ -183,15 +183,15 @@ Intelligently tunes Linux kernel parameters for your specific hardware: swappine
 
 ---
 
-### 🔒 [Process Sentry](https://github.com/bobbycomet/Process-Sentry)
+### [Process Sentry](https://github.com/bobbycomet/Process-Sentry)
 
-A predictive, adaptive process priority daemon. Quietly watches in the background and throttles processes that are hogging CPU, memory, or I/O before they make your desktop sluggish — without ever killing anything. Learns which programs are repeat offenders over time and gets faster at reining them in. Automatically backs off during games and is aware of Appify PWA apps so those are never throttled.
+A predictive, adaptive process priority daemon. Quietly watches in the background and throttles processes that are hogging CPU, memory, or I/O before they make your desktop sluggish — without ever killing anything. Learns which programs are repeat offenders over time and gets faster at reining them in. Automatically backs off during games and is aware of Appify PWA apps, so those are never throttled.
 
-**With Grix:** Process Sentry runs as a systemd service Grix's failed-service check can monitor, and can report findings through the plugin system the same way Kernel Autotune does.
+**With Grix:** Process Sentry runs as a systemd service that Grix's failed-service check can monitor and can report findings through the plugin system the same way Kernel Autotune does.
 
 ---
 
-### 🌀 [XKM — Multi-Kernel Manager](https://github.com/bobbycomet/XKM-Multi-Kernel-Manager)
+### [XKM — Multi-Kernel Manager](https://github.com/bobbycomet/XKM-Multi-Kernel-Manager)
 
 A graphical kernel manager for Ubuntu-based systems. Browse, install, hold, and remove kernels — XanMod, Liquorix, and mainline — without touching the terminal. Handles repository setup, DKMS, bootloader updates, and kernel pinning from one clean interface. Includes an auto-remove button that keeps your active and most recent kernels and cleans up the rest.
 
@@ -199,7 +199,7 @@ A graphical kernel manager for Ubuntu-based systems. Browse, install, hold, and 
 
 ---
 
-### 🌐 [Appify](https://github.com/bobbycomet/Appify)
+### [Appify](https://github.com/bobbycomet/Appify)
 
 Turns any website into a real desktop app in under a second. Each app gets an isolated browser profile, its own taskbar icon and application menu entry, and optional extension presets. Supports every browser you have installed (native, Flatpak, and Snap), works correctly on both Wayland and X11, and includes cloud gaming-aware kiosk mode with gamepad support. No userChrome.css, no fragile hacks.
 
@@ -218,7 +218,7 @@ If a Griffin tool isn't installed yet, Griffin Updater handles that too. Click I
 
 ---
 
-### 🌡️ [Fan Hub](https://github.com/bobbycomet/Fan-Hub)
+### [Fan Hub](https://github.com/bobbycomet/Fan-Hub)
 
 Graphical fan curve editor for Linux. Fine-grained control over fan behavior per-sensor, without needing to drop to a terminal or edit config files by hand.
 
@@ -264,7 +264,7 @@ Plugins you write for your own use are not affected by this; the plugin API is i
 
 Grix will be distributed as an **AppImage** when released. An AppImage is a single self-contained file that runs on any modern Linux distribution without installation. Download it, make it executable (`chmod +x Grix-*.AppImage`), and run it. No package manager, no root, no system changes required for the application itself.
 
-AppImage requires FUSE to mount the image at runtime. Grix itself checks for both libfuse2 and libfuse3, so if your system is missing one, Grix will tell you, and offer to install it.
+AppImage requires FUSE to mount the image at runtime. Grix itself checks for both libfuse2 and libfuse3, so if your system is missing one, Grix will tell you and offer to install it.
 
 ---
 
