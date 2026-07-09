@@ -46,7 +46,7 @@ Checks on every scan:
 
 | Category | What it looks for |
 |---|---|
-| Package management | Broken dependencies, interrupted installs, available updates, APT lock conflicts |
+| Package management | Broken dependencies, interrupted installs, available updates, APT lock conflicts. This works with your package manager; it does not replace it. I would suggest using your package manager for updates, as some updates will be phased or locked by Ubuntu until Ubuntu releases them. So, you may get a warning that one or more did not update. |
 | Disk space | Root partition usage, APT cache, old kernels, unused Flatpak runtimes, old Snap revisions, oversized backup snapshots |
 | Services | Failed systemd units, audio stack health (PipeWire / PulseAudio) |
 | Networking | Internet connectivity, firewall (ufw) status |
