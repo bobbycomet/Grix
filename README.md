@@ -262,7 +262,7 @@ Plugins you write for your own use are not affected by this; the plugin API is i
 
 ## Distribution
 
-Grix will be distributed as an **AppImage** when released. An AppImage is a single self-contained file that runs on any modern Linux distribution without installation. Download it, make it executable (`chmod +x Grix-*.AppImage`), and run it. No package manager, no root, no system changes required for the application itself.
+Grix will be distributed as an **AppImage**. An AppImage is a single self-contained file that runs on any modern Linux distribution without installation. Download it, make it executable (`chmod +x Grix-*.AppImage`), and run it. No package manager, no root, no system changes required for the application itself.
 
 AppImage requires FUSE to mount the image at runtime. Grix itself checks for both libfuse2 and libfuse3, so if your system is missing one, Grix will tell you and offer to install it.
 
@@ -280,6 +280,16 @@ AppImage requires FUSE to mount the image at runtime. Grix itself checks for bot
 
 ---
 
+Grix is licensed under the GPLv3, and forks and derivative projects are welcome.
+
+If you build on XKM, please:
+
+- Keep the GPLv3 license terms intact.
+- Give appropriate credit to the original XKM project.
+- Include a link back to this repository where practical.
+
+If you're building something cool with it, I'd love to hear about it!
+
 ## Community and Support
 
 - **Discord:** [Join Here](https://discord.gg/7fEt5W7DPh)
@@ -292,4 +302,6 @@ AppImage requires FUSE to mount the image at runtime. Grix itself checks for bot
   Made with Windows switchers in mind. Built for everyone who wants a better PC.</p>
 </div>
 
-*Grix is part of the Griffin Linux project. The name Grix, the Griffin Linux name, and associated icons are protected under the GPLv3 to preserve the integrity of the branding in all distributed versions.*
+The Grix and Griffin Linux names, logos, and branding are not covered by the GPL license and may not be used to imply endorsement 
+or official affiliation without permission. Forks are encouraged, but please rename and rebrand modified versions unless you've 
+received permission to use the original branding.
