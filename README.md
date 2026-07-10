@@ -282,10 +282,10 @@ AppImage requires FUSE to mount the image at runtime. Grix itself checks for bot
 
 Grix is licensed under the GPLv3, and forks and derivative projects are welcome.
 
-If you build on XKM, please:
+If you build on Grix, please:
 
 - Keep the GPLv3 license terms intact.
-- Give appropriate credit to the original XKM project.
+- Give appropriate credit to the original Grix project.
 - Include a link back to this repository where practical.
 
 If you're building something cool with it, I'd love to hear about it!
