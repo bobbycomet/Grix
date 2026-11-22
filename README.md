@@ -21,11 +21,11 @@ Linux is powerful. It is also unforgiving in ways that have nothing to do with h
 
 ## What is Grix?
 
-Grix is a desktop app with built-in Debian/Ubuntu support. Optional distribution plugins extend System Sentinel's package-management repairs to Arch/pacman, Fedora/DNF, and RHEL-compatible RPM distributions using DNF.
+Grix 1.0.1 is a desktop app with built-in Debian/Ubuntu support. On Arch, Fedora, and RHEL-compatible distributions, you can add package-management checks and repairs with the matching distribution plugin. The plugins use pacman or DNF, so Grix can work with the tools your distribution already uses. [See the plugin install instructions](plugins/README.md).
 
-**It explains what's wrong and fixes it safely.** System Sentinel scans your system for common health issues, broken packages, failing services, disk bloat, outdated software, network problems, an inactive firewall, stale logs, and surfaces each one in plain language with a **Repair Preview** showing the exact command that will run, why it's needed, what will change, and the risk level. You approve every single action before anything happens. Nothing runs silently.
+**It explains what's wrong and fixes it safely.** System Sentinel scans your system for common health issues, broken packages, unused packages, available updates, package-cache bloat, failing services, network problems, an inactive firewall, and stale logs. It explains each finding in plain language and shows a **Repair Preview** with the exact command that will run, why it's needed, what will change, and the risk level. You approve every single action before anything happens. Nothing runs silently.
 
-**It teaches you Linux while you use it.** Linux Academy walks you through 29 lessons across three skill tracks. Beginner, Intermediate, and Advanced, using a built-in practice terminal that simulates a real filesystem so you can try commands without risking anything on your actual system. Every lesson is written the way Grix explains repairs: in plain English, by a human, for a human.
+**It teaches you Linux while you use it.** Linux Academy walks you through 29 built-in lessons across three skill tracks: Beginner, Intermediate, and Advanced. Optional distribution plugins add pacman and AUR safety lessons, Fedora DNF and COPR guidance, and package-management lessons for RPM-based systems. The built-in practice terminal simulates a real filesystem, so you can try commands without risking anything on your actual system. Every lesson is written the way Grix explains repairs: in plain English, by a human, for a human.
 
 The goal is simple: close the gap that sends new Linux users back to Windows when something breaks, not by hiding what's happening, but by explaining it well enough that you understand a little more every time.
 
@@ -46,7 +46,7 @@ Checks on every scan:
 
 | Category | What it looks for |
 |---|---|
-| Package management | Broken dependencies, unused packages, available updates, and package-cache cleanup using APT/dpkg, pacman, or DNF on supported distributions with the matching plugin. Package changes always require approval. |
+| Package management | Broken dependencies, unused packages, available updates, and package-cache cleanup using APT/dpkg by default, or pacman and DNF with the matching distribution plugin. Package changes always require approval. |
 | Disk space | Root partition usage, package caches, old kernels where safe to identify, unused Flatpak runtimes, old Snap revisions, oversized backup snapshots |
 | Services | Failed systemd units, audio stack health (PipeWire / PulseAudio) |
 | Networking | Internet connectivity, firewall status (ufw on Debian/Ubuntu; firewalld where supported by a distro plugin) |
@@ -93,7 +93,7 @@ Being upfront about this matters as much as the feature list. Grix **does not**:
 - Diagnose individual application crashes or bugs — it checks system-level health, not the internal behavior of every program you have installed
 - Replace hardware diagnostic tools — it can surface relevant log entries, but tools like `smartctl` and `memtest86+` are the right choice for failing drives and RAM
 - Act as a security scanner or intrusion detection system — firewall checks only report basic firewall status
-- Support every Linux distribution — distro-specific repairs require a matching plugin; the current package-manager plugins support Arch/pacman, Fedora/DNF, and RHEL-compatible distributions with DNF. openSUSE and yum-only releases are not currently supported.
+- Support every Linux distribution — Debian/Ubuntu package checks are built in. Arch/pacman, Fedora/DNF, and RHEL-compatible distributions with DNF need the matching plugin. openSUSE and yum-only releases are not currently supported.
 - Perform open-ended analysis — System Sentinel only runs its defined checks plus any installed plugins, nothing more
 
 The same applies to Explain This Error: it covers Linux system errors (packages, permissions, disk, networking, services, shell), not application bugs, programming errors, or anything outside that defined scope.
@@ -106,7 +106,7 @@ Grix is specifically designed to never compete with or undermine the tools your 
 
 Every fix Grix suggests routes through **`pkexec`** — the same mechanism Linux desktop environments use for privileged actions — and shows you a graphical authentication prompt with a Grix-branded, narrowly scoped permission description. You always see exactly what will run before you authorize it, and you can copy any fix command and run it yourself in a terminal instead if you prefer.
 
-On Debian/Ubuntu, background scans check whether APT or dpkg is actively running before starting. Distro plugins use their native package-manager queries and repair commands. Grix reads what the package manager knows; it doesn't try to replace it, and every repair still requires your approval.
+On Debian/Ubuntu, background scans check whether APT or dpkg is actively running before starting. Distribution plugins use pacman or DNF for their native package-manager checks and repairs. Grix reads what the package manager knows; it doesn't try to replace it, and every repair still requires your approval.
 
 Nothing Grix does touches your system without your explicit approval — no silent background changes, no auto-applying fixes, no sending data anywhere. Everything stays local.
 
@@ -191,11 +191,11 @@ A predictive, adaptive process priority daemon. Quietly watches in the backgroun
 
 ---
 
-### [XKM — Multi-Kernel Manager](https://github.com/bobbycomet/XKM-Multi-Kernel-Manager)
+### [GKM — Griffin Kernel Manager](https://github.com/bobbycomet/GKM)
 
-A graphical kernel manager for Ubuntu-based systems. Browse, install, hold, and remove kernels — XanMod, Liquorix, and mainline — without touching the terminal. Handles repository setup, DKMS, bootloader updates, and kernel pinning from one clean interface. Includes an auto-remove button that keeps your active and most recent kernels and cleans up the rest.
+GKM is the multi-distro version of XKM, built on the same architecture. It brings kernel management to more Linux distributions while keeping the same approach to installing, holding, and removing kernels.
 
-**With Grix:** Grix's old-kernels check detects accumulated kernel versions taking up disk space and points toward cleaning them up. XKM is exactly the tool to do that cleanup with full visibility into which kernels are installed and which is currently running.
+**With Grix:** Grix's old-kernels check detects accumulated kernel versions taking up disk space and points toward cleaning them up. GKM gives you a dedicated place to review and manage kernels for your distribution.
 
 ---
 
@@ -213,7 +213,7 @@ Griffin ships with a dedicated updater for all of its tools. It checks each tool
 
 If a Griffin tool isn't installed yet, Griffin Updater handles that too. Click Install next to any tool, and it takes care of the rest. For tools available in both AppImage and Deb formats, choose your preference once, and the updater remembers it.
 
-- **AppImage** (Deb also available where noted): Appify, Griffin Hub, Grix, Fan Hub, Griffin Updater, XKM
+- **AppImage** (Deb also available where noted): Appify, Griffin Hub, Grix, Fan Hub, Griffin Updater, GKM
 - **Deb only**: Griffin Persona
 
 ---
