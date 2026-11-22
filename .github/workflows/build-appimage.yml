@@ -68,6 +68,12 @@ jobs:
           APPIMAGE_EXTRACT_AND_RUN: "1"
         run: bash build_appimage.sh
 
+      - name: Smoke-test packaged Python
+        working-directory: grix_app/dist
+        run: |
+          ./Grix-x86_64.AppImage --appimage-extract
+          ./squashfs-root/usr/pyenv/bin/python -c "import grix; import PyQt6.QtCore; print('Bundled Grix and PyQt6 imports succeeded')"
+
       - name: Create checksum and build summary
         run: |
           cd grix_app/dist
