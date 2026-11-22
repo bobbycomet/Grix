@@ -3,6 +3,6 @@
   "name": "Arch Linux and pacman Lessons",
   "version": "1.0.0",
   "author": "Grix community",
-  "description": "Adds Arch Linux package-management and AUR safety lessons for pacman-based distributions.",
+  "description": "Adds Arch/pacman package health, updates, cache and firewall checks with approved repairs, plus AUR safety lessons.",
   "grix_api_version": 1
 }

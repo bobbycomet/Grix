@@ -53,6 +53,7 @@ plugin.py must define a module-level function:
 
   def register(api: PluginAPI) -> None:
       api.register_check(my_check_function)
+      api.register_check(package_check, replaces=("package_manager",))
       api.register_dynamic_checks(my_variable_count_provider)
       api.register_lesson_track(my_track)
       api.register_panel("my_panel", "My Panel", MyPanelWidgetClass)
@@ -155,6 +156,7 @@ class PluginInfo:
 @dataclass
 class _Registry:
     checks: list[Callable[[], object]] = field(default_factory=list)
+    replaced_check_ids: set[str] = field(default_factory=set)
     dynamic_check_providers: list[Callable[[], list]] = field(default_factory=list)
     lesson_tracks: list[object] = field(default_factory=list)
     panels: list[PluginPanelSpec] = field(default_factory=list)
@@ -170,14 +172,27 @@ class PluginAPI:
         self._registry = registry
         self._plugin_id = plugin_id
 
-    def register_check(self, check_fn: Callable[[], object]) -> None:
+    def register_check(
+        self,
+        check_fn: Callable[[], object],
+        replaces: tuple[str, ...] = (),
+    ) -> None:
         """Register a new System Sentinel check. check_fn must take no
         arguments and return a grix.modules.diagnostics.CheckResult,
         exactly like Grix's own built-in checks. It will be called
         once per scan, on the scan background thread - the same
         try/except safety net that protects built-in checks also
-        wraps plugin checks, so a buggy check can't crash a scan."""
+        wraps plugin checks, so a buggy check can't crash a scan.
+
+        `replaces` may contain stable built-in check ids that this
+        platform-specific check supersedes. Those built-ins are skipped
+        for the current session, preventing unsupported package-manager
+        checks from running alongside the plugin's implementation."""
+        for check_id in replaces:
+            if not isinstance(check_id, str) or not check_id.strip():
+                raise ValueError("replaced check ids must be non-empty strings")
         self._registry.checks.append(check_fn)
+        self._registry.replaced_check_ids.update(replaces)
 
     def register_dynamic_checks(self, provider_fn: Callable[[], list]) -> None:
         """Register a source that can produce a VARIABLE number of

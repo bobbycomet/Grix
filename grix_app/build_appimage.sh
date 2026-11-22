@@ -6,8 +6,7 @@
 #
 # Prerequisites:
 #   - appimagetool   (download from https://github.com/AppImage/appimagetool)
-#   - python3        (3.10 or newer)
-#   - pip3
+#   - curl, tar, sha256sum
 #
 # Usage:
 #   bash build_appimage.sh
@@ -46,6 +45,7 @@ APPDIR="/tmp/GrixAppDir"
 OUTPUT_DIR="$SCRIPT_DIR/dist"
 OUTPUT_NAME="Grix-x86_64.AppImage"
 ARCH="x86_64"
+PYTHON_STANDALONE_RELEASE="20261110"
 
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
@@ -73,6 +73,20 @@ for arg in "$@"; do
     esac
 done
 
+case "$ARCH" in
+    x86_64)
+        PYTHON_STANDALONE_ARCH="x86_64"
+        PYTHON_STANDALONE_SHA256="ac0b758b6ae4ba1cb87f7091eb6bb17c9a383a9bcdb5c18493cdd4f34e35ae8c"
+        ;;
+    arm64)
+        PYTHON_STANDALONE_ARCH="aarch64"
+        PYTHON_STANDALONE_SHA256="623a370be4489d8c35c7a274be02f3007a030618cda29025780beb416c6c8861"
+        ;;
+    *)
+        die "Unsupported architecture: $ARCH (expected x86_64 or arm64)."
+        ;;
+esac
+
 OUTPUT_PATH="$OUTPUT_DIR/$OUTPUT_NAME"
 
 echo ""
@@ -87,8 +101,9 @@ echo ""
 
 log "Checking prerequisites..."
 
-command -v python3 >/dev/null 2>&1  || die "python3 is required."
-command -v pip3    >/dev/null 2>&1  || die "pip3 is required."
+command -v curl      >/dev/null 2>&1 || die "curl is required."
+command -v tar       >/dev/null 2>&1 || die "tar is required."
+command -v sha256sum >/dev/null 2>&1 || die "sha256sum is required."
 
 APPIMAGETOOL=""
 for candidate in appimagetool appimagetool-"$ARCH".AppImage ./appimagetool ./appimagetool-"$ARCH".AppImage; do
@@ -109,9 +124,6 @@ ok "Using appimagetool: $APPIMAGETOOL"
 ok "Architecture: $ARCH"
 ok "Output: $OUTPUT_PATH"
 
-BUILD_PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-ok "Build machine Python: $BUILD_PYTHON_VERSION"
-
 # ---------------------------------------------------------------------------
 # Clean previous build
 # ---------------------------------------------------------------------------
@@ -129,24 +141,21 @@ mkdir -p "$OUTPUT_DIR"
 # ---------------------------------------------------------------------------
 
 log "Installing Grix and dependencies into AppDir..."
-PYTHON_PREFIX="$APPDIR/usr"
-
-# Create a virtual-env-like structure inside AppDir
-python3 -m venv "$APPDIR/usr/pyenv" --without-pip
+PYTHON_ARCHIVE="$APPDIR/python-standalone.tar.gz"
+PYTHON_ARCHIVE_URL="https://github.com/astral-sh/python-build-standalone/releases/download/${PYTHON_STANDALONE_RELEASE}/cpython-3.11.18%2B${PYTHON_STANDALONE_RELEASE}-${PYTHON_STANDALONE_ARCH}-unknown-linux-gnu-install_only.tar.gz"
+curl --fail --location --retry 3 "$PYTHON_ARCHIVE_URL" --output "$PYTHON_ARCHIVE"
+echo "${PYTHON_STANDALONE_SHA256}  ${PYTHON_ARCHIVE}" | sha256sum --check
+tar -xzf "$PYTHON_ARCHIVE" -C "$APPDIR/usr"
+rm "$PYTHON_ARCHIVE"
+mv "$APPDIR/usr/python" "$APPDIR/usr/pyenv"
 
 APPDIR_PYTHON="$APPDIR/usr/pyenv/bin/python"
+[[ -x "$APPDIR_PYTHON" ]] || die "Standalone Python was not extracted correctly."
 
-# Re-derive the Python version from the venv's own interpreter rather
-# than trusting it matches the pre-creation python3 check above - this
-# is what GRIX_DEST and the AppRun launcher's site-packages path below
-# are built from, so it must be exactly right.
+# Use the bundled interpreter's version when locating its site-packages.
 PYTHON_VERSION=$("$APPDIR_PYTHON" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
 ok "AppDir Python: $PYTHON_VERSION"
 
-# Install pip into it. ensurepip only guarantees pip3/pip3.X binaries,
-# not a plain "pip" - so everything below invokes pip via
-# "python -m pip" instead of assuming a specific binary name exists.
-"$APPDIR_PYTHON" -m ensurepip --upgrade
 "$APPDIR_PYTHON" -m pip install --upgrade pip --quiet
 "$APPDIR_PYTHON" -m pip install -r "$SCRIPT_DIR/requirements.txt" --quiet
 "$APPDIR_PYTHON" -m pip install "$SCRIPT_DIR" --quiet

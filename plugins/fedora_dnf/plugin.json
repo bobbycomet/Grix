@@ -3,6 +3,6 @@
   "name": "Fedora and DNF Lessons",
   "version": "1.0.0",
   "author": "Grix community",
-  "description": "Adds Fedora package-management guidance using DNF and an introduction to COPR repositories.",
+  "description": "Adds Fedora DNF package health, updates, cache, firewall and kernel checks with approved repairs, plus COPR guidance.",
   "grix_api_version": 1
 }

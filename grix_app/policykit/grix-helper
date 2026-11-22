@@ -16,6 +16,15 @@
 # Subcommands (mirrors System Sentinel's built-in fixes):
 #   dpkg-configure                      sudo dpkg --configure -a
 #   fix-broken                          sudo apt --fix-broken install
+#   pacman-upgrade                      sudo pacman -Syu --noconfirm
+#   pacman-clean-cache                  sudo pacman -Sc --noconfirm
+#   pacman-remove <pkg...>              sudo pacman -Rns <pkg...>
+#   dnf-upgrade                         sudo dnf upgrade --refresh --assumeyes
+#   dnf-distro-sync                     sudo dnf distro-sync --assumeyes
+#   dnf-clean-cache                     sudo dnf clean all
+#   dnf-remove <pkg...>                 remove only explicitly selected packages
+#   dnf-remove-old-kernels              sudo dnf remove --oldinstallonly --assumeyes
+#   enable-firewalld                    sudo systemctl enable --now firewalld
 #   apt-update                          sudo apt update
 #   apt-clean                           sudo apt clean
 #   apt-autoremove                      sudo apt autoremove
@@ -38,7 +47,7 @@
 set -euo pipefail
 
 UNIT_NAME_RE='^[a-zA-Z0-9@._-]+$'
-PKG_NAME_RE='^[a-zA-Z0-9][a-zA-Z0-9+.:-]*$'
+PKG_NAME_RE='^[A-Za-z0-9][A-Za-z0-9_.+:-]*$'
 USER_NAME_RE='^[a-z_][a-z0-9_-]*$'
 DURATION_RE='^[0-9]+(s|m|h|d|w|month|year)?$'
 SIZE_RE='^[0-9]+(K|M|G|T)?$'
@@ -69,6 +78,50 @@ case "$subcommand" in
 
     fix-broken)
         exec apt-get --fix-broken install -y
+        ;;
+
+    pacman-upgrade)
+        exec pacman -Syu --noconfirm
+        ;;
+
+    pacman-clean-cache)
+        exec pacman -Sc --noconfirm
+        ;;
+
+    pacman-remove)
+        [[ $# -ge 1 ]] || die "pacman-remove requires at least one package name"
+        for pkg in "$@"; do
+            [[ "$pkg" =~ $PKG_NAME_RE ]] || die "invalid package name: $pkg"
+        done
+        exec pacman -Rns "$@"
+        ;;
+
+    dnf-upgrade)
+        exec dnf upgrade --refresh --assumeyes
+        ;;
+
+    dnf-distro-sync)
+        exec dnf distro-sync --assumeyes
+        ;;
+
+    dnf-clean-cache)
+        exec dnf clean all
+        ;;
+
+    dnf-remove)
+        [[ $# -ge 1 ]] || die "dnf-remove requires at least one package name"
+        for pkg in "$@"; do
+            [[ "$pkg" =~ $PKG_NAME_RE ]] || die "invalid package name: $pkg"
+        done
+        exec dnf remove --assumeyes --setopt=clean_requirements_on_remove=False "$@"
+        ;;
+
+    dnf-remove-old-kernels)
+        exec dnf remove --oldinstallonly --assumeyes
+        ;;
+
+    enable-firewalld)
+        exec systemctl enable --now firewalld
         ;;
 
     apt-update)

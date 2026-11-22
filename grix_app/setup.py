@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="grix",
-    version="0.1.0",
+    version="1.0.1",
     description="Grix: a friendly Linux system troubleshooter and learning companion",
     packages=find_packages(),
     include_package_data=True,

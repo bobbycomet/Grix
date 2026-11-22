@@ -247,6 +247,11 @@ chmod +x dist/Grix-x86_64.AppImage
 Use `--output <name>` to change the output filename, or `--arch <arch>`
 for a different target architecture.
 
+To create a downloadable test build without publishing a release, run
+the **Build AppImage** workflow from the repository's Actions tab. Choose
+the branch to build; the workflow runs the tests and uploads the AppImage
+and its SHA-256 checksum as an artifact retained for 14 days.
+
 ## Project Layout
 
 ```

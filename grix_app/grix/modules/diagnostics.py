@@ -104,6 +104,15 @@ _HELPER_COMMAND_MAP: list[tuple[str, str]] = [
     ("dpkg --configure -a", "dpkg-configure"),
     ("apt --fix-broken install", "fix-broken"),
     ("apt-get --fix-broken install", "fix-broken"),
+    ("pacman -Syu --noconfirm", "pacman-upgrade"),
+    ("pacman -Sc --noconfirm", "pacman-clean-cache"),
+    ("pacman -Rns ", "pacman-remove "),
+    ("dnf upgrade --refresh --assumeyes", "dnf-upgrade"),
+    ("dnf distro-sync --assumeyes", "dnf-distro-sync"),
+    ("dnf clean all", "dnf-clean-cache"),
+    ("dnf remove --assumeyes --setopt=clean_requirements_on_remove=False ", "dnf-remove "),
+    ("dnf remove --oldinstallonly --assumeyes", "dnf-remove-old-kernels"),
+    ("systemctl enable --now firewalld", "enable-firewalld"),
     ("apt update && sudo apt upgrade -y", "apt-upgrade"),
     ("apt update", "apt-update"),
     ("apt clean", "apt-clean"),
@@ -1436,8 +1445,8 @@ def check_security_basics() -> CheckResult:
             summary="Your firewall is currently turned off.",
             fixes=[fix],
             why=(
-                "ufw (Uncomplicated Firewall) ships with Ubuntu but is not "
-                "enabled by default on most desktop installs. Without it, "
+                "ufw (Uncomplicated Firewall) is installed but not enabled. "
+                "Without an active firewall, "
                 "your system accepts incoming connection attempts on any "
                 "port that has a listening service - usually not "
                 "dangerous on a home network, but enabling the firewall "
@@ -2106,12 +2115,13 @@ SCOPE_NOT_COVERED: list[str] = [
     "Hardware diagnostics (failing drives, GPU issues, RAM problems) - "
     "beyond surfacing relevant log entries, dedicated hardware "
     "diagnostic tools (smartctl, memtest86+, etc.) do this properly.",
-    "Security auditing or intrusion detection - the firewall check "
-    "confirms ufw is active, but Grix is not a security scanner and "
-    "doesn't check for malware, rootkits, or unauthorized access.",
-    "Non-Debian/Ubuntu-based distros - checks rely on apt/dpkg and "
-    "Debian-family conventions; on other distros most checks report "
-    "\"not checked\" rather than guessing.",
+    "Security auditing or intrusion detection - firewall checks only "
+    "verify basic status for a supported firewall; Grix is not a security "
+    "scanner and doesn't check for malware, rootkits, or unauthorized access.",
+    "Unsupported distributions or missing distro plugins - package "
+    "management and firewall checks are implemented only for Debian/"
+    "Ubuntu by default, with optional plugins for Arch/pacman, Fedora/"
+    "DNF, and RHEL-compatible DNF distributions.",
     "Anything Grix wasn't explicitly told to check for - System "
     "Sentinel only runs the checks in ALL_CHECKS (or installed "
     "plugins, see grix/modules/plugins.py); it does not perform open-"
