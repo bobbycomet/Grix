@@ -1,9 +1,23 @@
-"""Package-management lessons for RPM-based distributions."""
+"""RPM-family DNF lessons and Sentinel checks for Grix."""
 
+from _shared.dnf_support import register_dnf_checks
 from grix.modules.lessons import Lesson, Track
 
 
+_SUPPORTED_IDS = {
+    "rhel",
+    "rocky",
+    "almalinux",
+    "centos",
+    "ol",
+    "oracle",
+    "oraclelinux",
+    "amzn",
+}
+
+
 def register(api) -> None:
+    register_dnf_checks(api, _SUPPORTED_IDS, "rpm")
     api.register_lesson_track(
         Track(
             id="rpm_family_package_management",
@@ -24,9 +38,9 @@ def register(api) -> None:
                             "AlmaLinux use the **RPM** package format. On "
                             "current releases, **DNF** is typically the "
                             "higher-level package manager: it uses configured "
-                            "repositories and resolves dependencies. Older "
-                            "systems may use `yum`, and the exact command "
-                            "depends on the distribution and release.",
+                            "repositories and resolves dependencies. This "
+                            "plugin's repair checks require DNF; yum-only "
+                            "releases are not currently supported.",
                         ),
                         (
                             "text",

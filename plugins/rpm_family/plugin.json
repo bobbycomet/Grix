@@ -3,6 +3,6 @@
   "name": "RPM-Based Distribution Lessons",
   "version": "1.0.0",
   "author": "Grix community",
-  "description": "Adds package-management guidance for RPM-based enterprise distributions using DNF and the rpm query tools.",
+  "description": "Adds DNF package health, updates, cache, firewall and kernel checks with approved repairs for RHEL-compatible RPM distributions.",
   "grix_api_version": 1
 }

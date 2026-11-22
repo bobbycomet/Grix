@@ -1,9 +1,11 @@
-"""Fedora DNF and COPR lessons for Grix."""
+"""Fedora DNF and COPR lessons and Sentinel checks for Grix."""
 
+from _shared.dnf_support import register_dnf_checks
 from grix.modules.lessons import Lesson, Track
 
 
 def register(api) -> None:
+    register_dnf_checks(api, {"fedora"}, "fedora")
     api.register_lesson_track(
         Track(
             id="fedora_package_management",

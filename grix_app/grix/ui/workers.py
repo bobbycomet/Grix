@@ -25,6 +25,13 @@ get_plugin_registry = plugins.get_plugin_registry
 get_plugin_infos = plugins.get_plugin_infos
 reload_plugins = plugins.reload_plugins
 
+_BUILTIN_CHECK_IDS = {
+    diagnostics.check_package_manager: "package_manager",
+    diagnostics.check_updates: "updates",
+    diagnostics.check_security_basics: "security",
+    diagnostics.check_old_kernels: "old_kernels",
+}
+
 
 class ScanWorker(QThread):
     """Runs all diagnostic checks (built-in + any loaded plugin
@@ -36,7 +43,15 @@ class ScanWorker(QThread):
 
     def run(self) -> None:
         results: list[CheckResult] = []
+        try:
+            registry = get_plugin_registry()
+        except Exception:  # pragma: no cover - plugin loading must not break built-ins
+            registry = None
+        replaced_check_ids = registry.replaced_check_ids if registry else set()
+
         for check_fn in diagnostics.ALL_CHECKS:
+            if _BUILTIN_CHECK_IDS.get(check_fn) in replaced_check_ids:
+                continue
             # Best-effort friendly name before running
             self.check_started.emit(check_fn.__name__)
             try:
@@ -55,8 +70,7 @@ class ScanWorker(QThread):
         # built-in Griffin Suite integration works now - see
         # grix/plugins/griffin_suite/ - there's no special-casing of
         # any particular plugin here, Griffin's included or not).
-        try:
-            registry = get_plugin_registry()
+        if registry is not None:
             for check_fn in registry.checks:
                 try:
                     result = check_fn()
@@ -86,8 +100,6 @@ class ScanWorker(QThread):
                 for result in dynamic_results:
                     results.append(result)
                     self.check_finished.emit(result)
-        except Exception:  # pragma: no cover - never let plugin loading break a scan
-            pass
 
         self.all_finished.emit(results)
 
