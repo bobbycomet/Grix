@@ -1,6 +1,10 @@
 name: Build AppImage
 
 on:
+  push:
+    paths:
+      - ".github/workflows/build-appimage.yml"
+      - "grix_app/**"
   workflow_dispatch:
 
 permissions:
