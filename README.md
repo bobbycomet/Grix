@@ -17,6 +17,15 @@ Linux is powerful. It is also unforgiving in ways that have nothing to do with h
   <b>The system troubleshooter and learning companion Linux never shipped with.</b><br>
   Built for people who switched from Windows and want their computer to just work.
 
+## Supported distros
+
+- Debian/Ubuntu — built in
+- Arch-based — plugin required
+- Fedora — plugin required
+- RHEL-compatible DNF — plugin required
+- openSUSE — unsupported currently
+- systemd requirement
+
 ---
 
 ## What is Grix?
