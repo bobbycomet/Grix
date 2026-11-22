@@ -54,7 +54,7 @@ jobs:
 
       - name: Download appimagetool
         env:
-          APPIMAGETOOL_SHA256: e0f68dfd35b8a833ef3d103fb8da0685da7e0325cc009a5e3f9ac24166855d2c
+          APPIMAGETOOL_SHA256: e8c1169c4af66c3184d7ee110713d4be04befe671fa358e2c1591ee840553b03
         run: |
           curl --fail --location --retry 3 \
             https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage \
